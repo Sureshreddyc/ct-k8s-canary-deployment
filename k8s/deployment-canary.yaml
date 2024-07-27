@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-app-canary
+  namespace: canary
+  labels:
+    app: my-app
+    version: canary
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: my-app
+      version: canary
+  template:
+    metadata:
+      labels:
+        app: my-app
+        version: canary
+    spec:
+      containers:
+      - name: my-app
+        image: 630777559208.dkr.ecr.ap-south-1.amazonaws.com/demo:canary
+        ports:
+        - containerPort: 80
