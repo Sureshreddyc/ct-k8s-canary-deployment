@@ -84,7 +84,7 @@ pipeline {
                             kubectl apply -f k8s/virtual-service-updated.yaml
                             '''
                         } else {
-                            kubectl apply -f k8s/deployment-canary.yaml
+                            sh 'kubectl apply -f k8s/deployment-canary.yaml'
                         }
                     }
                 }
