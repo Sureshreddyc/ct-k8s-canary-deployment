@@ -1,25 +1,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: my-app-stable
-  namespace: canary
-  labels:
-    app: my-app
-    version: stable
+  name: demoapp-v1
+  namespace: canary-deployment
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
-      app: my-app
-      version: stable
+      app: demoapp
+      version: v1
   template:
     metadata:
       labels:
-        app: my-app
-        version: stable
+        app: demoapp
+        version: v1
     spec:
       containers:
-      - name: my-app
-        image: 630777559208.dkr.ecr.ap-south-1.amazonaws.com/demo:stable
+      - image: 630777559208.dkr.ecr.ap-south-1.amazonaws.com/demo:v1
+        imagePullPolicy: IfNotPresent
+        name: demo-app-v1
         ports:
-        - containerPort: 80
+        - containerPort: 5000
