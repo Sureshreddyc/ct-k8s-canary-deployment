@@ -1,15 +1,15 @@
 apiVersion: networking.istio.io/v1beta1
 kind: Gateway
 metadata:
-  name: my-app-gateway
+  name: demoapp-gateway
   namespace: canary
 spec:
   selector:
     istio: ingressgateway
   servers:
-  - port:
-      number: 80
+  - hosts:
+    - 'canary-deployment.test.cloudtechner.com'
+    port:
       name: http
+      number: 80
       protocol: HTTP
-    hosts:
-    - "*"
