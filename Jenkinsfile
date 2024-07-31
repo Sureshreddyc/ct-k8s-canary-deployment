@@ -9,7 +9,6 @@ pipeline {
         ECR_REGISTRY = '630777559208.dkr.ecr.ap-south-1.amazonaws.com'
         ECR_REGION = 'ap-south-1'
         KUBECONFIG_PATH = "${WORKSPACE}/kubeconfig"
-        DEPLOYMENT_TYPE = '' // Will be set later based on the context
     }
 
     stages {
@@ -80,7 +79,9 @@ pipeline {
                         if (env.BRANCH_NAME != 'main') {
                             input message: 'Approve Canary Deployment?', ok: 'Deploy'
                             sh '''
-                            kubectl apply -f k8s/deployment-canary-v2.yaml
+                            kubectl apply -f k8s/deployment-canary-updated.yaml
+                            kubectl apply -f k8s/destination-rule-updated.yaml
+                            kubectl apply -f k8s/virtual-service-updated.yaml
                             '''
                         } else {
                             kubectl apply -f k8s/deployment-canary.yaml
