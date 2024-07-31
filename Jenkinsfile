@@ -9,21 +9,28 @@ pipeline {
         ECR_REGISTRY = '630777559208.dkr.ecr.ap-south-1.amazonaws.com'
         ECR_REGION = 'ap-south-1'
         KUBECONFIG_PATH = "${WORKSPACE}/kubeconfig"
-        NAMESPACE = 'canary'
+        DEPLOYMENT_TYPE = '' // Will be set later based on the context
     }
 
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'main', credentialsId: "${GITHUB_CREDENTIALS_ID}", url: "${GITHUB_REPO}"
+                script {
+                    def branch = (env.BRANCH_NAME == 'main') ? 'main' : 'featurebranch'
+                    git branch: branch, credentialsId: "${GITHUB_CREDENTIALS_ID}", url: "${GITHUB_REPO}"
+                }
             }
         }
 
         stage('Build Docker Images') {
             steps {
                 script {
-                    docker.build("${ECR_REGISTRY}/${REPO_NAME}:stable")
-                    docker.build("${ECR_REGISTRY}/${REPO_NAME}:canary")
+                    if (env.BRANCH_NAME == 'main') {
+                        docker.build("${ECR_REGISTRY}/${REPO_NAME}:stable")
+                        docker.build("${ECR_REGISTRY}/${REPO_NAME}:canary")
+                    } else {
+                        docker.build("${ECR_REGISTRY}/${REPO_NAME}:canary-v2")
+                    }
                 }
             }
         }
@@ -42,9 +49,15 @@ pipeline {
             steps {
                 script {
                     sh 'echo "Pushing Docker images to ECR"'
-                    docker.withRegistry("https://${ECR_REGISTRY}") {
-                        docker.image("${ECR_REGISTRY}/${REPO_NAME}:stable").push()
-                        docker.image("${ECR_REGISTRY}/${REPO_NAME}:canary").push()
+                    if (env.BRANCH_NAME == 'main') {
+                        docker.withRegistry("https://${ECR_REGISTRY}") {
+                            docker.image("${ECR_REGISTRY}/${REPO_NAME}:stable").push()
+                            docker.image("${ECR_REGISTRY}/${REPO_NAME}:canary").push()
+                        }
+                    } else {
+                        docker.withRegistry("https://${ECR_REGISTRY}") {
+                            docker.image("${ECR_REGISTRY}/${REPO_NAME}:canary-v2").push()
+                        }
                     }
                 }
             }
@@ -57,14 +70,21 @@ pipeline {
                         sh '''
                         export KUBECONFIG=${KUBECONFIG_PATH}
                         aws eks --region ${ECR_REGION} update-kubeconfig --name my-new-cluster --kubeconfig $KUBECONFIG
-                        kubectl apply -f namespace.yaml
-                        kubectl apply -f deployment-stable.yaml
-                        kubectl apply -f deployment-canary.yaml
-                        kubectl apply -f service.yaml
-                        kubectl apply -f gateway.yaml
-                        kubectl apply -f destination-rule.yaml
-                        kubectl apply -f virtual-service.yaml
+                        kubectl apply -f k8s/namespace.yaml
+                        kubectl apply -f k8s/deployment-stable.yaml
+                        kubectl apply -f k8s/service.yaml
+                        kubectl apply -f k8s/gateway.yaml
+                        kubectl apply -f k8s/destination-rule.yaml
+                        kubectl apply -f k8s/virtual-service.yaml
                         '''
+                        if (env.BRANCH_NAME != 'main') {
+                            input message: 'Approve Canary Deployment?', ok: 'Deploy'
+                            sh '''
+                            kubectl apply -f k8s/deployment-canary-v2.yaml
+                            '''
+                        } else {
+                            kubectl apply -f k8s/deployment-canary.yaml
+                        }
                     }
                 }
             }
@@ -75,6 +95,7 @@ pipeline {
                 script {
                     sh "docker rmi ${ECR_REGISTRY}/${REPO_NAME}:stable"
                     sh "docker rmi ${ECR_REGISTRY}/${REPO_NAME}:canary"
+                    sh "docker rmi ${ECR_REGISTRY}/${REPO_NAME}:canary-v2"
                 }
             }
         }
