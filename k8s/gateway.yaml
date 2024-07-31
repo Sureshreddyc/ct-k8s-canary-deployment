@@ -8,7 +8,7 @@ spec:
     istio: ingressgateway
   servers:
   - hosts:
-    - 'canary-deployment.test.cloudtechner.com'
+    - 'canary.test.cloudtechner.com'
     port:
       name: http
       number: 80
