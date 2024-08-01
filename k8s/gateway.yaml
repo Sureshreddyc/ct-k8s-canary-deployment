@@ -17,5 +17,8 @@ spec:
       number: 443
       name: https
       protocol: HTTPS
+    tls:
+      mode: SIMPLE
+      credentialName: your-tls-secret
     hosts:
     - "canary.test.cloudtechner.com"
