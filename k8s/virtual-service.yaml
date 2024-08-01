@@ -9,7 +9,7 @@ spec:
   hosts:
   - 'canary.test.cloudtechner.com'
   http:
-    route:
+  - route:
     - destination:
         host: demoapp.canary.svc.cluster.local
         port:
