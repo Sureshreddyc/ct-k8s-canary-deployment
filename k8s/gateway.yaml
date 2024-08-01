@@ -1,7 +1,7 @@
-apiVersion: networking.istio.io/v1
+apiVersion: networking.istio.io/v1beta1
 kind: Gateway
 metadata:
-  name: demoapp-gateway
+  name: example-gateway
   namespace: canary
 spec:
   selector:
@@ -12,4 +12,10 @@ spec:
       name: http
       protocol: HTTP
     hosts:
-    - canary.test.cloudtechner.com
+    - "canary.test.cloudtechner.com"
+  - port:
+      number: 443
+      name: https
+      protocol: HTTPS
+    hosts:
+    - "canary.test.cloudtechner.com"
