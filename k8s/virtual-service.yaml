@@ -1,15 +1,18 @@
-apiVersion: networking.istio.io/v1
+apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
 metadata:
-  name: demoapp-virtualservice
+  name: example-virtualservice
   namespace: canary
 spec:
   hosts:
-  - canary.test.cloudtechner.com
+  - "canary.test.cloudtechner.com"
   gateways:
-  - demoapp-gateway
+  - example-gateway
   http:
-  - route:
+  - match:
+    - uri:
+        prefix: /
+    route:
     - destination:
         host: demoapp.canary.svc.cluster.local
         port:
