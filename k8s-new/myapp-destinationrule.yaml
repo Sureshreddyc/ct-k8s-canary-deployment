@@ -2,6 +2,7 @@ apiVersion: networking.istio.io/v1alpha3
 kind: DestinationRule
 metadata:
   name: myapp
+  namespace: canary
 spec:
   host: myapp-service
   subsets:
