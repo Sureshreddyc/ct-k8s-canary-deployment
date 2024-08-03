@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myapp-stable
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: myapp
+      version: stable
+  template:
+    metadata:
+      labels:
+        app: myapp
+        version: stable
+    spec:
+      containers:
+      - name: myapp
+        image: 630777559208.dkr.ecr.ap-south-1.amazonaws.com/demo:stable
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: myapp-service
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+    targetPort: 5000
+  selector:
+    app: myapp
