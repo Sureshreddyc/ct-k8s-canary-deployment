@@ -5,11 +5,11 @@ metadata:
   namespace: canary
 spec:
   selector:
-    istio: ingressgateway
+    istio: ingressgateway # Ensures that this gateway is picked up by the ingressgateway
   servers:
   - port:
       number: 80
       name: http
       protocol: HTTP
     hosts:
-    - "myapp-service.canary.svc.cluster.local"
+    - "myapp-service.canary.svc.cluster.local" # Fully qualified domain name
