@@ -5,7 +5,7 @@ metadata:
   namespace: canary
 spec:
   hosts:
-  - "myapp-service.canary.svc.cluster.local"
+  - "myapp-service.canary.svc.cluster.local" # Must match the host in the Gateway
   http:
   - route:
     - destination:
