@@ -4,7 +4,7 @@ metadata:
   name: myapp
   namespace: canary
 spec:
-  host: myapp-service
+  host: myapp-service.canary.svc.cluster.local
   subsets:
   - name: stable
     labels:
