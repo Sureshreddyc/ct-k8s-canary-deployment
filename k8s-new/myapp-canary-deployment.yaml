@@ -16,4 +16,4 @@ spec:
     spec:
       containers:
       - name: myapp
-        image: 630777559208.dkr.ecr.ap-south-1.amazonaws.com/demo:canary
+        image: 630777559208.dkr.ecr.ap-south-1.amazonaws.com/demo:canary-v2
