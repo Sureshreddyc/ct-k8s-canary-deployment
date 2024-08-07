@@ -11,8 +11,8 @@ spec:
     - destination:
         host: myapp-service.canary.svc.cluster.local
         subset: stable
-      weight: 80
+      weight: 90
     - destination:
         host: myapp-service.canary.svc.cluster.local
         subset: canary
-      weight: 20
+      weight: 10
